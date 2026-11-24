@@ -1,0 +1,1635 @@
+/* 카지노 테이블 : 3D로 기울어진 타원 펠트 + 원목 레일, 앉아 있는 사람, 칩 베팅 */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
+
+:root {
+  --font-display: 'DM Serif Display', Georgia, var(--font);
+  --font-num: var(--font);
+
+  --tilt: 24deg;
+  --bg: #0c0806;
+  --bg-fx: radial-gradient(70vw 60vh at 50% 35%, rgba(255, 196, 120, 0.13), transparent 70%), radial-gradient(ellipse at 50% 120%, #000 20%, transparent 70%);
+  --surface: rgba(28, 19, 13, 0.82);
+  --surface-2: rgba(255, 230, 190, 0.08);
+  --surface-strong: #1c130d;
+  --border: rgba(230, 190, 120, 0.16);
+  --border-strong: rgba(230, 190, 120, 0.35);
+  --shadow: 0 1px 0 rgba(255, 220, 170, 0.06) inset, 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 1px 0 rgba(255, 220, 170, 0.08) inset, 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-sm: 10px;
+
+  --text: #f6efe2;
+  --muted: #b4a48b;
+  --accent: #e6b34a;
+  --accent-ink: #1e1305;
+  --hit: #c8102e;
+  --hit-ink: #fff;
+  --stay: #1f3f99;
+  --stay-ink: #fff;
+  --danger: #e2473f;
+  --success: #57d68d;
+  --turn: #f2c45a;
+
+  --card-bg: linear-gradient(180deg, #fffdf7, #f2ebdc);
+  --card-ink: #1a1410;
+  --card-border: rgba(0, 0, 0, 0.12);
+  --card-shadow: 0 2px 0 rgba(0, 0, 0, 0.18), 0 8px 14px -4px rgba(0, 0, 0, 0.55);
+  --card-neg-bg: linear-gradient(180deg, #fff7f4, #f8dcd4);
+  --card-neg-ink: #b0141f;
+  --card-seven-bg: linear-gradient(160deg, #fff6d8, #ecc35c);
+  --card-seven-ink: #5a3a00;
+  --card-back:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.13) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.13) 0 2px, transparent 2px 7px), #8e1424;
+
+  --track: rgba(0, 0, 0, 0.35);
+  --track-gap: #1c130d;
+
+  --felt: #136a42;
+  --gold-line: rgba(240, 205, 130, 0.5);
+
+  /* 테이블 재질 */
+  --rail-bg:
+    repeating-linear-gradient(100deg, rgba(0, 0, 0, 0.12) 0 3px, transparent 3px 11px),
+    radial-gradient(ellipse at 50% 20%, #7a4a2b, #4b2a17 55%, #2c170b);
+  --rail-edge: #1a0d06;
+  --felt-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .28 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --felt-bg: radial-gradient(ellipse at 50% 42%, #23935b 0%, #157046 45%, #0c4a2e 100%);
+  --felt-trim: var(--gold-line);
+  --felt-line: rgba(240, 205, 130, 0.28);
+  --felt-glow: none;
+  --plate-bg: linear-gradient(180deg, #2e2017, #1a110b);
+  --plate-border: rgba(240, 205, 130, 0.25);
+  --dock-bg: linear-gradient(180deg, #2a1c13, #1a110b);
+  --tray-bg: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.2)), #1a3a2a;
+  --btn-grad: linear-gradient(180deg, #f6d27c, #d9a03a);
+  --chip-edge: #f4ecdd;
+  --chip1: #c8102e;
+  --chip1s: #8a0a1f;
+  --chip5: #1f4fbf;
+  --chip5s: #12307a;
+  --chip25: #10804a;
+  --chip25s: #0a5230;
+  --hit-side: #7d0a1d;
+  --stay-side: #0f2260;
+  --d8-1: #ec4a5f;
+  --d8-2: #c92139;
+  --d8-3: #a1162b;
+  --d8-4: #7c0f20;
+  --value-ink: #ffe6a6;
+  --chair: #3a2418;
+}
+
+/* ───────── 공통 요소 톤 ───────── */
+.logo,
+.logo-sm {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.logo .hit,
+.logo-sm .hit {
+  color: var(--accent);
+}
+.logo .stay,
+.logo-sm .stay {
+  color: var(--text);
+}
+button:not(.ghost):not(.danger-ghost):not(.danger):not(.blue):not(.choice-btn):not(.tchip):not(.step) {
+  background: var(--btn-grad);
+  color: var(--accent-ink);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 -2px 0 rgba(0, 0, 0, 0.2) inset, 0 6px 14px -6px rgba(230, 170, 60, 0.7);
+}
+.pill.phase {
+  background: var(--btn-grad);
+}
+/* 홈 / 대기실 = 펠트 카드 + 원목 테두리 */
+.home-box {
+  background: var(--felt-noise), var(--felt-bg);
+  border: 10px solid var(--rail-edge);
+  border-image: none;
+  box-shadow:
+    0 0 0 2px #2a170c,
+    inset 0 0 0 2px var(--gold-line),
+    inset 0 0 50px rgba(0, 0, 0, 0.45),
+    0 40px 80px -20px rgba(0, 0, 0, 0.9);
+}
+.home-box input {
+  background: rgba(0, 0, 0, 0.28);
+  border-color: rgba(255, 230, 180, 0.2);
+}
+.room-code {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.member-list li {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ───────── 테이블 레이아웃 ───────── */
+.game.tablegame {
+  grid-template-columns: 1fr;
+  max-width: 1440px;
+}
+.tablegame .main {
+  gap: 6px;
+  min-height: calc(100dvh - 32px); /* .game 위아래 여백 16px */
+}
+/* 남는 높이는 테이블 영역이 차지하고, 행동 패널은 항상 맨 아래 */
+.tablegame .table-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.tablegame .dock {
+  margin-top: auto;
+}
+.table-wrap {
+  position: relative;
+  perspective: 1700px;
+  perspective-origin: 50% 0%;
+  padding: 84px 64px 36px;
+}
+.table {
+  position: relative;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  aspect-ratio: 2.45 / 1;
+  border-radius: 50%;
+  transform: rotateX(var(--tilt));
+  transform-style: preserve-3d;
+  /* 레일 */
+  background: var(--rail-bg);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 220, 170, 0.25),
+    inset 0 -10px 18px rgba(0, 0, 0, 0.6),
+    0 0 0 3px var(--rail-edge),
+    0 50px 60px -10px rgba(0, 0, 0, 0.85),
+    var(--felt-glow);
+}
+.felt {
+  position: absolute;
+  inset: 26px;
+  border-radius: 50%;
+  background: var(--felt-noise), var(--felt-bg);
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 5px var(--felt-trim),
+    inset 0 14px 40px rgba(0, 0, 0, 0.6),
+    inset 0 -6px 30px rgba(0, 0, 0, 0.35);
+}
+.felt-line {
+  position: absolute;
+  inset: 21% 15%;
+  border-radius: 50%;
+  border: 2px solid var(--felt-line);
+}
+.table-rules {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+.table-rules b {
+  color: var(--value-ink);
+}
+
+/* 테이블 위에 "서 있는" 오브젝트: 기울기를 되돌려 화면을 마주보게 */
+.table-center,
+.t-seat,
+.t-bet,
+.t-stage {
+  position: absolute;
+  transform: translate(-50%, -100%) rotateX(calc(-1 * var(--tilt)));
+  transform-origin: 50% 100%;
+}
+/* 펠트 위에 "누워 있는" 오브젝트 */
+.t-hand,
+.t-puck {
+  position: absolute;
+  transform: translate(-50%, -50%) translateZ(1px);
+}
+
+.table-center {
+  left: 50%;
+  top: 56%;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(18px, 3vw, 42px);
+}
+
+/* 덱 슈 */
+.shoe {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+.shoe-cards {
+  position: relative;
+  width: 40px;
+  height: 54px;
+}
+.shoe-cards i {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  background: var(--card-back);
+  border: 2px solid #f6efe2;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+.shoe-cards i:nth-child(1) {
+  transform: translate(-4px, 4px) rotate(-6deg);
+}
+.shoe-cards i:nth-child(2) {
+  transform: translate(-2px, 2px) rotate(-3deg);
+}
+.shoe-n {
+  font-weight: 800;
+  font-size: 15px;
+  margin-top: 4px;
+}
+.shoe-k,
+.d8-k,
+.pot-k {
+  font-size: 11px;
+  color: rgba(240, 225, 190, 0.7);
+  font-weight: 600;
+}
+
+/* 8면체 주사위 */
+.d8 {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+.d8-svg {
+  width: 78px;
+  height: 78px;
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.55));
+}
+.d8-svg polygon {
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+.d8-svg .f1 {
+  fill: var(--d8-1);
+}
+.d8-svg .f2 {
+  fill: var(--d8-2);
+}
+.d8-svg .f3 {
+  fill: var(--d8-3);
+}
+.d8-svg .f4 {
+  fill: var(--d8-4);
+}
+.d8-num {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.45);
+}
+
+/* 팟 */
+.pot {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 60px;
+}
+.pot-v {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--value-ink);
+  margin-top: 4px;
+}
+
+/* ───────── 3D 칩 ───────── */
+.chip-pile {
+  display: inline-flex;
+  align-items: flex-end;
+}
+.chip-pile .chip-stack + .chip-stack {
+  margin-left: -6px;
+}
+.chip-pile .chip-stack:nth-child(even) {
+  margin-bottom: -5px;
+}
+.chip-stack {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: calc((var(--k) - 1) * 4px + 15px);
+}
+.chip3d {
+  --c: var(--chip1);
+  --cs: var(--chip1s);
+  --edge: var(--chip-edge);
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 15px;
+  border-radius: 50% / 6px;
+  /* 옆면 줄무늬 */
+  background: repeating-linear-gradient(90deg, var(--cs) 0 5px, var(--edge) 5px 7px);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+.chip3d::before {
+  /* 윗면 */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 11px;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 50%, var(--c) 0 36%, rgba(255, 255, 255, 0.85) 37% 41%, var(--c) 42% 60%, transparent 61%),
+    repeating-conic-gradient(var(--c) 0 30deg, var(--edge) 30deg 45deg);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.chip-stack .chip3d {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--i) * 4px);
+}
+.chip3d.d1 {
+  --c: var(--chip1);
+  --cs: var(--chip1s);
+}
+.chip3d.d5 {
+  --c: var(--chip5);
+  --cs: var(--chip5s);
+}
+.chip3d.d25 {
+  --c: var(--chip25);
+  --cs: var(--chip25s);
+}
+.chip3d.fly {
+  position: fixed;
+  z-index: 50;
+  pointer-events: none;
+  width: 34px;
+  height: 17px;
+}
+.chip3d.fly::before {
+  height: 13px;
+}
+#fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  perspective: 600px;
+}
+
+/* 베팅 칩 + 금액 태그 */
+.t-bet,
+.t-stage {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+}
+.t-bet b,
+.t-stage b {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--value-ink);
+}
+.t-bet.landing .chip-pile,
+.t-stage.landing .chip-pile {
+  animation: land 0.22s ease-out var(--land, 500ms) backwards;
+}
+@keyframes land {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.t-stage b {
+  background: var(--accent);
+  color: var(--accent-ink);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.t-stage:empty {
+  display: none;
+}
+
+/* 선 플레이어 퍽 (딜러 버튼처럼) */
+.t-puck {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: #1a1410;
+  background: radial-gradient(circle at 40% 35%, #fff, #e6dccb);
+  box-shadow: 0 3px 0 #a89a82, 0 6px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ───────── 자리: 앉은 사람 + 명패 ───────── */
+.t-seat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  transition: opacity 0.2s, filter 0.2s;
+}
+.t-plate {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  margin-top: -12px; /* 사람의 몸통 아래를 가림 = 테이블 뒤에 앉은 느낌 */
+  border-radius: 999px;
+  background: var(--plate-bg);
+  border: 1px solid var(--plate-border);
+  box-shadow:
+    0 1px 0 rgba(255, 230, 190, 0.12) inset,
+    0 10px 20px -6px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  transition: box-shadow 0.2s;
+}
+.t-seat.me .t-plate {
+  margin-top: 0;
+  padding: 5px 16px 5px 5px;
+}
+.t-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  background: linear-gradient(145deg, #5a3d2a, #3a271a);
+  border: 2px solid rgba(240, 205, 130, 0.35);
+  flex: none;
+}
+.t-info {
+  display: grid;
+  line-height: 1.15;
+}
+.t-name {
+  font-weight: 700;
+  font-size: 13px;
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.t-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--value-ink);
+}
+.chip-ico {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--chip1) 0 40%, transparent 41%),
+    repeating-conic-gradient(var(--chip1) 0 30deg, var(--chip-edge) 30deg 45deg);
+  display: inline-block;
+}
+.t-badges {
+  display: flex;
+  gap: 3px;
+}
+.t-badges .badge {
+  font-size: 10px;
+  padding: 2px 6px;
+}
+.t-bubble {
+  position: absolute;
+  white-space: nowrap;
+  bottom: calc(100% + 6px);
+  z-index: 3;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  background: #f6efe2;
+  color: #1a1410;
+  box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.6);
+}
+.t-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: #f6efe2;
+}
+.t-bubble.live {
+  background: var(--turn);
+}
+.t-bubble.live::after {
+  border-top-color: var(--turn);
+}
+.t-seat.turn .t-plate {
+  border-color: var(--turn);
+  box-shadow:
+    0 0 0 2px var(--turn),
+    0 0 26px rgba(242, 196, 90, 0.55),
+    0 10px 20px -6px rgba(0, 0, 0, 0.8);
+}
+.t-seat.turn .t-avatar {
+  border-color: var(--turn);
+}
+.t-seat.winner .t-plate {
+  box-shadow:
+    0 0 0 2px var(--success),
+    0 0 30px rgba(87, 214, 141, 0.6);
+}
+.t-seat.folded,
+.t-seat.dead {
+  opacity: 0.55;
+  filter: saturate(0.4);
+}
+.t-seat.me .t-avatar {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(145deg, #f6d27c, #c88f2c);
+  color: #2a1a06;
+}
+.t-win {
+  /* 명패 오른쪽에 붙는 획득 배지 — 머리 위 공간(말풍선·상단 정보 줄)과 겹치지 않게 */
+  position: absolute;
+  left: calc(100% + 6px);
+  bottom: 4px;
+  z-index: 4;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: #06140c;
+  background: var(--success);
+  box-shadow: 0 0 18px rgba(87, 214, 141, 0.6), 0 4px 8px rgba(0, 0, 0, 0.5);
+  animation: winPop 0.5s cubic-bezier(0.3, 0.7, 0.3, 1.4) 0.6s both;
+}
+.t-seat.east .t-win {
+  left: auto;
+  right: calc(100% + 6px);
+}
+@keyframes winPop {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.6);
+  }
+}
+
+/* 손패 (펠트 위 부채꼴) */
+.t-hand {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.t-hand .cards {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+.t-hand .card {
+  --w: 36px;
+  rotate: var(--rot, 0deg);
+  transform-origin: 50% 120%;
+}
+.t-hand .card + .card {
+  margin-left: -12px;
+}
+.t-hand.t-mine .card {
+  --w: 62px;
+}
+.t-hand.t-mine .card + .card {
+  margin-left: -14px;
+}
+.t-hand.t-mine .cards {
+  padding-bottom: 0;
+}
+.t-hand.folded {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+.t-open {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 235, 190, 0.85);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+.card.secret {
+  opacity: 1;
+  outline: 2px dashed rgba(200, 150, 60, 0.85);
+  outline-offset: -6px;
+}
+.card.secret::after {
+  display: none;
+}
+.card.pick:hover {
+  outline: 3px solid var(--turn);
+  outline-offset: 2px;
+}
+
+/* 라운드 결과: 기울지 않은 오버레이 */
+.table-result {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 92%);
+  z-index: 5;
+}
+.table-result .result {
+  background: rgba(20, 13, 9, 0.88);
+  backdrop-filter: blur(6px);
+  border-color: var(--accent);
+}
+
+.stat.lottery {
+  margin: 0 auto;
+}
+
+/* ───────── 내 손 패널 (도크) ───────── */
+.dock {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.6fr) 1.6fr;
+  gap: 24px;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--dock-bg);
+  border: 1px solid var(--plate-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 230, 190, 0.1),
+    0 20px 40px -20px rgba(0, 0, 0, 0.9);
+  margin-top: -10px;
+  min-height: 228px; /* 단계마다 높이가 달라 테이블 크기가 출렁이지 않게 (베팅 패널 기준) */
+}
+.dock.turn {
+  border-color: var(--turn);
+  box-shadow:
+    0 0 0 2px rgba(242, 196, 90, 0.35),
+    0 0 40px -6px rgba(242, 196, 90, 0.35);
+}
+.dock-meter {
+  display: grid;
+  gap: 8px;
+}
+.meter-sum {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+.meter-fill {
+  background: var(--btn-grad);
+}
+.meter-track {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ★ HIT / STAY = 카지노 칩 버튼 */
+.dock .choice {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+}
+.dock .choice-hint {
+  justify-content: center;
+  flex-wrap: wrap;
+  text-align: center;
+}
+.choice-btn {
+  --c: var(--hit);
+  --cs: var(--hit-side);
+  width: 150px;
+  height: 150px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  text-align: center;
+  overflow: visible;
+  border: 0;
+  color: #fff;
+  background:
+    radial-gradient(circle, var(--c) 0 54%, rgba(255, 255, 255, 0.9) 55% 57%, var(--c) 58% 66%, transparent 67%),
+    repeating-conic-gradient(from 7deg, var(--c) 0 30deg, var(--chip-edge) 30deg 45deg);
+  box-shadow:
+    0 8px 0 var(--cs),
+    0 8px 0 1px rgba(0, 0, 0, 0.4),
+    0 22px 30px -8px rgba(0, 0, 0, 0.8),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  transform: perspective(500px) rotateX(18deg);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.choice-btn.stay {
+  --c: var(--stay);
+  --cs: var(--stay-side);
+}
+.choice-btn:hover:not(:disabled) {
+  transform: perspective(500px) rotateX(10deg) translateY(-6px);
+  box-shadow:
+    0 12px 0 var(--cs),
+    0 12px 0 1px rgba(0, 0, 0, 0.4),
+    0 30px 36px -8px rgba(0, 0, 0, 0.8),
+    0 0 30px color-mix(in srgb, var(--c) 60%, transparent),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25);
+}
+.choice-btn:active:not(:disabled) {
+  transform: perspective(500px) rotateX(18deg) translateY(6px);
+  box-shadow:
+    0 2px 0 var(--cs),
+    0 2px 0 1px rgba(0, 0, 0, 0.4),
+    0 6px 10px -4px rgba(0, 0, 0, 0.8);
+}
+.choice-btn .choice-icon {
+  width: 34px;
+  height: 34px;
+  background: none;
+  margin: 0 auto;
+}
+.choice-btn .choice-icon svg {
+  width: 30px;
+  height: 30px;
+}
+.choice-btn .choice-text {
+  justify-items: center;
+}
+.choice-btn .choice-label {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: 0.04em;
+}
+.choice-btn .choice-sub {
+  font-size: 10.5px;
+  opacity: 0.9;
+  max-width: 88px;
+  line-height: 1.25;
+}
+.choice-btn kbd {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* ★ 칩 트레이 베팅 */
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: var(--tray-bg);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 230, 190, 0.08);
+  flex-wrap: wrap;
+}
+.tchip {
+  --c: var(--chip1);
+  --cs: var(--chip1s);
+  width: 58px;
+  height: 58px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  background:
+    radial-gradient(circle, var(--c) 0 50%, rgba(255, 255, 255, 0.9) 51% 54%, var(--c) 55% 64%, transparent 65%),
+    repeating-conic-gradient(from 7deg, var(--c) 0 30deg, var(--chip-edge) 30deg 45deg);
+  box-shadow:
+    0 5px 0 var(--cs),
+    0 5px 0 1px rgba(0, 0, 0, 0.4),
+    0 12px 14px -4px rgba(0, 0, 0, 0.7);
+  transform: perspective(300px) rotateX(28deg);
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s,
+    opacity 0.15s;
+}
+.tchip span {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+.tchip.d5 {
+  --c: var(--chip5);
+  --cs: var(--chip5s);
+}
+.tchip.d25 {
+  --c: var(--chip25);
+  --cs: var(--chip25s);
+}
+.tchip:hover:not(:disabled) {
+  transform: perspective(300px) rotateX(20deg) translateY(-6px);
+  filter: brightness(1.1);
+}
+.tchip:active:not(:disabled) {
+  transform: perspective(300px) rotateX(28deg) translateY(3px);
+  box-shadow:
+    0 2px 0 var(--cs),
+    0 4px 6px -2px rgba(0, 0, 0, 0.7);
+}
+.tchip:disabled {
+  opacity: 0.3;
+}
+.tray-clear {
+  margin-left: auto;
+  padding: 8px 14px;
+  font-size: 13px;
+}
+.chip-bet .bet-bar .call,
+.chip-bet .bet-bar .raise-go {
+  min-width: 150px;
+}
+.chip-bet .bet-bar > button {
+  min-height: 44px;
+}
+.raise-go {
+  background: linear-gradient(180deg, #3a63d6, #1f3f99) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 6px 14px -6px rgba(31, 79, 191, 0.8) !important;
+}
+button.danger-ghost {
+  background: rgba(226, 71, 63, 0.08);
+}
+
+.log {
+  background: linear-gradient(180deg, #22170f, #160e09);
+}
+.toast {
+  background: #2a1c13;
+}
+
+@media (max-width: 1080px) {
+  .game.tablegame {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  :root {
+    --tilt: 14deg;
+  }
+  .table-wrap {
+    padding: 56px 34px 64px;
+  }
+  .table {
+    aspect-ratio: 1 / 1.25;
+  }
+  .t-name {
+    max-width: 60px;
+  }
+  .t-badges {
+    display: none;
+  }
+  .t-hand.t-mine .card {
+    --w: 56px;
+  }
+  .dock {
+    grid-template-columns: 1fr;
+  }
+  .choice-btn {
+    width: 124px;
+    height: 124px;
+  }
+  .table-center {
+    gap: 12px;
+  }
+  .d8-svg {
+    width: 60px;
+    height: 60px;
+  }
+  .d8-num {
+    top: 13px;
+    font-size: 26px;
+  }
+  /* 폰: 중앙 오브젝트와 손패를 줄여 겹침 방지 */
+  .table-wrap {
+    padding: 80px 24px 44px;
+  }
+  .shoe,
+  .d8-k,
+  .pot-k,
+  .t-open {
+    display: none;
+  }
+  .table-center {
+    top: 55%;
+  }
+  .d8-svg {
+    width: 50px;
+    height: 50px;
+  }
+  .d8-num {
+    top: 10px;
+    font-size: 20px;
+  }
+  .pot-v {
+    font-size: 18px;
+  }
+  .t-hand .card {
+    --w: 26px;
+  }
+  .t-hand .card + .card {
+    margin-left: -10px;
+  }
+  .t-hand.t-mine .card {
+    --w: 50px;
+  }
+  .t-person {
+    zoom: 0.52;
+  }
+  .t-bet,
+  .t-stage,
+  .t-puck {
+    zoom: 0.8;
+  }
+  .t-plate {
+    padding: 4px 9px;
+    margin-top: -12px;
+  }
+}
+
+/* ───────── 앉은 사람 (CSS 3D 상반신) ───────── */
+.t-person {
+  position: relative;
+  width: 92px;
+  height: 84px;
+  zoom: 0.72;
+  flex: none;
+  transform-origin: 50% 100%;
+  transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.3, 1.3);
+}
+.t-person i {
+  position: absolute;
+  display: block;
+}
+/* 의자 등받이 */
+.p-chair {
+  left: 50%;
+  bottom: 6px;
+  width: 78px;
+  height: 66px;
+  margin-left: -39px;
+  border-radius: 22px 22px 6px 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--chair) 100%, #fff 12%), var(--chair));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.1), inset 0 -8px 12px rgba(0, 0, 0, 0.4);
+}
+/* 몸통: 어깨가 둥근 사다리꼴 + 측면 음영 */
+.p-body {
+  left: 50%;
+  bottom: 0;
+  width: 70px;
+  height: 46px;
+  margin-left: -35px;
+  border-radius: 30px 30px 8px 8px;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3), transparent 28%, transparent 70%, rgba(0, 0, 0, 0.35)),
+    linear-gradient(180deg, color-mix(in srgb, var(--shirt) 100%, #fff 18%), var(--shirt) 60%);
+  box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.15) inset;
+}
+.p-collar {
+  left: 50%;
+  top: 0;
+  width: 22px;
+  height: 12px;
+  margin-left: -11px;
+  border-radius: 0 0 12px 12px;
+  background: color-mix(in srgb, var(--skin) 80%, #000 20%);
+}
+.p-neck {
+  left: 50%;
+  bottom: 40px;
+  width: 14px;
+  height: 10px;
+  margin-left: -7px;
+  background: color-mix(in srgb, var(--skin) 85%, #000 15%);
+  border-radius: 4px;
+}
+/* 머리: 구 느낌의 방사형 그라데이션 */
+.p-head {
+  left: 50%;
+  bottom: 46px;
+  width: 34px;
+  height: 38px;
+  margin-left: -17px;
+  border-radius: 48% 48% 46% 46%;
+  background: radial-gradient(circle at 38% 34%, color-mix(in srgb, var(--skin) 100%, #fff 25%), var(--skin) 45%, color-mix(in srgb, var(--skin) 75%, #000 25%));
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
+}
+/* 얼굴: 눈 두 개 + 볼 */
+.p-face {
+  left: 8px;
+  right: 8px;
+  top: 17px;
+  height: 10px;
+  background:
+    radial-gradient(circle at 25% 30%, #1d1410 0 2px, transparent 2.5px),
+    radial-gradient(circle at 75% 30%, #1d1410 0 2px, transparent 2.5px),
+    radial-gradient(ellipse at 15% 90%, rgba(230, 110, 100, 0.35) 0 3px, transparent 4px),
+    radial-gradient(ellipse at 85% 90%, rgba(230, 110, 100, 0.35) 0 3px, transparent 4px);
+}
+.p-hair {
+  inset: -2px -2px auto -2px;
+  height: 18px;
+  border-radius: 20px 20px 6px 6px;
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--hair) 100%, #fff 18%), var(--hair) 60%);
+}
+.p-backhair {
+  display: none !important;
+}
+.hair-long .p-backhair {
+  display: block !important;
+  left: 50%;
+  bottom: 22px;
+  width: 44px;
+  height: 58px;
+  margin-left: -22px;
+  border-radius: 22px 22px 12px 12px;
+  background: linear-gradient(180deg, var(--hair), color-mix(in srgb, var(--hair) 80%, #000 20%));
+}
+.hair-long .p-hair {
+  height: 16px;
+}
+.hair-bun .p-hair::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 16px;
+  height: 14px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: var(--hair);
+}
+.hair-cap .p-hair {
+  height: 15px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--shirt) 70%, #fff 30%), var(--shirt));
+}
+.hair-cap .p-hair::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: -10px;
+  bottom: -3px;
+  height: 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--shirt) 80%, #000 20%);
+}
+.hair-curly .p-hair {
+  height: 20px;
+  inset: -5px -5px auto -5px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 20% 60%, var(--hair) 0 30%, transparent 31%),
+    radial-gradient(circle at 80% 60%, var(--hair) 0 30%, transparent 31%),
+    radial-gradient(circle at 50% 40%, var(--hair) 0 45%, transparent 46%);
+}
+.hair-side .p-hair {
+  border-radius: 20px 20px 2px 18px;
+  height: 20px;
+  transform: skewX(-8deg);
+}
+/* 팔: 레일(명패) 위에 올려둔 팔뚝 */
+.p-arm {
+  bottom: -6px;
+  width: 20px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--shirt) 80%, #000 20%), var(--shirt));
+  transform-origin: 50% 10%;
+  transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.3, 1.3);
+}
+.p-arm::after {
+  /* 손 */
+  content: '';
+  position: absolute;
+  left: 2px;
+  bottom: -4px;
+  width: 16px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--skin);
+}
+.p-arm.l {
+  left: 4px;
+  transform: rotate(28deg);
+}
+.p-arm.r {
+  right: 4px;
+  transform: rotate(-28deg);
+}
+
+/* 상태별 자세 */
+.t-seat.turn .t-person {
+  transform: translateY(-4px) scale(1.04);
+}
+.t-seat.turn .p-head {
+  animation: think 1.8s ease-in-out infinite;
+}
+@keyframes think {
+  50% {
+    transform: rotate(-6deg) translateY(-1px);
+  }
+}
+.t-seat.folded .t-person {
+  transform: translateY(6px) scale(0.96);
+}
+.t-seat.folded .p-arm.l {
+  transform: rotate(60deg);
+}
+.t-seat.folded .p-arm.r {
+  transform: rotate(-60deg);
+}
+.t-seat.winner .p-arm.l {
+  transform: translate(-6px, -46px) rotate(155deg);
+}
+.t-seat.winner .p-arm.r {
+  transform: translate(6px, -46px) rotate(-155deg);
+}
+.t-seat.winner .t-person {
+  animation: cheer 0.6s ease-in-out 3;
+}
+@keyframes cheer {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.t-seat.dead .t-person {
+  opacity: 0.35;
+}
+.table.crowded .t-person {
+  zoom: 0.62;
+}
+
+/* ★ 몇 개 걸지: 숫자 · 슬라이더 · 빠른 선택 */
+.chip-bet {
+  gap: 10px;
+}
+.bet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+  flex-wrap: wrap;
+}
+.amount-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.amount-line .amount-range {
+  flex: 1;
+}
+.amount-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.amount-k {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.amount-step {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 12px;
+  border: 1px solid var(--plate-border);
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+.amount-step button {
+  border: 0;
+  border-radius: 0;
+  padding: 0 14px;
+  font-size: 18px;
+  background: transparent;
+}
+.amount-step input {
+  width: 58px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 22px;
+  padding: 2px 0;
+  color: var(--value-ink);
+  -moz-appearance: textfield;
+}
+.amount-step input::-webkit-outer-spin-button,
+.amount-step input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+.amount-step input:focus {
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.05);
+}
+.amount-unit {
+  font-size: 13px;
+}
+.amount-presets {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.amount-presets button {
+  padding: 7px 12px;
+  font-size: 12px;
+  border-radius: 999px;
+}
+.amount-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, #d9a03a, #f6d27c) 0 0 / var(--p, 0%) 100% no-repeat,
+    rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+.amount-range:focus {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 0 3px rgba(230, 179, 74, 0.3);
+}
+/* 슬라이더 손잡이 = 칩 */
+.amount-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--chip1) 0 45%, transparent 46%),
+    repeating-conic-gradient(var(--chip1) 0 30deg, var(--chip-edge) 30deg 45deg);
+  box-shadow: 0 3px 0 var(--chip1s), 0 6px 10px rgba(0, 0, 0, 0.6);
+}
+.amount-range::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--chip1) 0 45%, transparent 46%),
+    repeating-conic-gradient(var(--chip1) 0 30deg, var(--chip-edge) 30deg 45deg);
+  box-shadow: 0 3px 0 var(--chip1s), 0 6px 10px rgba(0, 0, 0, 0.6);
+}
+.tray {
+  padding: 6px 12px;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.tray-k {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.tchip {
+  width: 40px;
+  height: 40px;
+  font-size: 13px;
+}
+.bet-summary {
+  font-size: 13px;
+  color: var(--muted);
+}
+.bet-summary b {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--value-ink);
+}
+.log-ticker {
+  background: rgba(0, 0, 0, 0.35);
+  border-color: var(--plate-border);
+}
+.log-pop {
+  background: linear-gradient(180deg, #22170f, #160e09);
+  border: 1px solid var(--plate-border);
+}
+@media (max-width: 760px) {
+  .amount-presets {
+    margin-left: 0;
+  }
+  .log-wrap {
+    order: 10;
+    flex: 1 1 100%;
+  }
+}
+
+/* ───────── 모바일 웹 (≤760px): 한 화면에 테이블 + 행동 패널 ───────── */
+@media (max-width: 760px) {
+  :root {
+    --tilt: 16deg;
+  }
+  .game.tablegame {
+    padding: 8px 10px 0;
+    padding-top: max(8px, env(safe-area-inset-top));
+    gap: 0;
+  }
+  .tablegame .main {
+    gap: 4px;
+    min-height: calc(100dvh - max(8px, env(safe-area-inset-top)));
+  }
+  /* 상단 바: 한 줄 + 딜러 기록 한 줄 */
+  .topbar {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .logo-sm {
+    font-size: 17px;
+    margin-right: 2px;
+  }
+  .topbar .pill {
+    padding: 4px 9px;
+    font-size: 11.5px;
+  }
+  .topbar .pill.room {
+    display: none;
+  }
+  .topbar [data-act='leave'] {
+    padding: 6px 11px;
+    font-size: 12px;
+  }
+  .log-wrap {
+    order: 10;
+    flex: 1 1 100%;
+  }
+  .log-ticker {
+    padding: 5px 10px;
+    font-size: 11.5px;
+  }
+  .log-pop {
+    width: 100%;
+    max-height: 50dvh;
+  }
+  .table-rules {
+    font-size: 11px;
+    margin: 0;
+  }
+
+  /* 테이블: 화면 폭을 다 쓰는 가로형 타원, 사람·카드 축소 */
+  .table-wrap {
+    padding: 56px 40px 28px;
+  }
+  .table {
+    aspect-ratio: 1.05 / 1;
+  }
+  .felt {
+    inset: 14px;
+  }
+  .tray-clear {
+    display: none;
+  }
+  .felt-line {
+    inset: 18% 14%;
+  }
+  .t-person {
+    zoom: 0.46;
+  }
+  .table.crowded .t-person {
+    zoom: 0.4;
+  }
+  .t-plate {
+    gap: 5px;
+    padding: 3px 8px;
+    margin-top: -8px;
+  }
+  .t-seat.me .t-plate {
+    padding: 3px 10px 3px 3px;
+  }
+  .t-seat.me .t-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  .t-name {
+    font-size: 11px;
+    max-width: 54px;
+  }
+  .t-chips {
+    font-size: 11px;
+  }
+  .t-bubble {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .t-win {
+    font-size: 13px;
+    padding: 1px 7px;
+  }
+  .t-hand .card {
+    --w: 24px;
+  }
+  .t-hand .card + .card {
+    margin-left: -9px;
+  }
+  .t-hand.t-mine .card {
+    --w: 42px;
+  }
+  .t-hand.t-mine .card + .card {
+    margin-left: -8px;
+  }
+  .table-center {
+    gap: 14px;
+    top: 56%;
+  }
+  .d8-svg {
+    width: 44px;
+    height: 44px;
+  }
+  .d8-num {
+    top: 9px;
+    font-size: 18px;
+  }
+  .pot-v {
+    font-size: 16px;
+  }
+  .t-bet,
+  .t-stage,
+  .t-puck {
+    zoom: 0.7;
+  }
+  .table-result {
+    width: 96%;
+  }
+  .table-result .result {
+    padding: 12px;
+  }
+  .table-result .result table {
+    font-size: 12px;
+  }
+  .table-result .result td,
+  .table-result .result th {
+    padding: 5px 4px;
+  }
+
+  /* 행동 패널: 아래에 붙는 시트 */
+  .dock {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    min-height: 0;
+    margin: -4px -10px 0;
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+    border-bottom: 0;
+  }
+  .dock-meter .bet-note {
+    display: none;
+  }
+  .meter {
+    gap: 6px;
+  }
+  .meter-sum {
+    font-size: 28px;
+  }
+  .meter-limit {
+    font-size: 15px;
+  }
+  .meter-note {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+  .meter-track {
+    height: 8px;
+  }
+  .prompt {
+    font-size: 13px;
+  }
+  .waiting {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  /* HIT / STAY 칩 */
+  .choice-hint > span:not(.prompt) {
+    display: none;
+  }
+  .dock .choice {
+    gap: 26px;
+    padding-bottom: 12px; /* 칩 두께(아래 그림자)가 화면 끝에 잘리지 않게 */
+  }
+  .choice-btn {
+    width: 100px;
+    height: 100px;
+  }
+  .choice-btn .choice-label {
+    font-size: 22px;
+  }
+  .choice-btn .choice-sub,
+  .choice-btn kbd {
+    display: none;
+  }
+  .choice-btn .choice-icon,
+  .choice-btn .choice-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  /* 베팅 */
+  .chip-bet {
+    gap: 8px;
+  }
+  .bet-summary {
+    font-size: 11.5px;
+  }
+  .bet-summary b {
+    font-size: 16px;
+  }
+  .amount-row {
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .amount-k,
+  .amount-unit {
+    display: none;
+  }
+  .amount-step button {
+    padding: 0 11px;
+  }
+  .amount-step input {
+    width: 44px;
+    font-size: 20px;
+  }
+  .amount-presets {
+    margin-left: 0;
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .amount-presets::-webkit-scrollbar {
+    display: none;
+  }
+  .amount-presets button {
+    flex: none;
+    padding: 6px 10px;
+  }
+  .amount-line {
+    gap: 10px;
+  }
+  .tray {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .tchip {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+  .bet-bar {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .bet-bar .spacer,
+  .danger-ghost .long {
+    display: none;
+  }
+  .chip-bet .bet-bar > button {
+    flex: 1;
+    min-width: 0 !important;
+    min-height: 44px;
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+}
+
+/* 딜러 기록의 단계 줄: 어두운 배경에서 읽히는 밝은 파랑 */
+.log-list .phase {
+  color: #8fb0ff;
+}
